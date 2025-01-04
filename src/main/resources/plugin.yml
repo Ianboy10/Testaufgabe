@@ -1,0 +1,13 @@
+name: Testaufgabe
+version: '${project.version}'
+main: de.ianboy10.firmenregister.Main
+
+author: Ian
+description: Firmenregister System
+
+depend: [NBTAPI]
+
+commands:
+  createfirma:
+  firmenregister:
+  delcompany:
