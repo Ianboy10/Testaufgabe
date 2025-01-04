@@ -28,7 +28,6 @@ public class RegisterCompany implements CommandExecutor {
             } else {
                 player.sendMessage("§cLösche deine Firma erst mit /delcompany");
             }
-
         } else {
             sender.sendMessage("§cDieser Befehl kann nur von einem Spieler ausgeführt werden.");
         }

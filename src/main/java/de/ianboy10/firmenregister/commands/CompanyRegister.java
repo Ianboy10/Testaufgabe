@@ -23,4 +23,5 @@ public class CompanyRegister implements CommandExecutor {
             return false; // Fehlgeschlagene Ausführung
         }
     }
+
 }

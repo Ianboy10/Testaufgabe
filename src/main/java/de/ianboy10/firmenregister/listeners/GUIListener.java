@@ -47,7 +47,7 @@ public class GUIListener implements Listener {
             } else if (displayName.equalsIgnoreCase("§a§lFirma verwalten")) {
                 // Verwaltung öffnen
                 player.closeInventory();
-                player.openInventory(GUIBuilder.getManagementInventory(player));
+                player.openInventory(GUIBuilder.getManagementInventory(UserManager.getCompany(player.getUniqueId())));
             } else if (displayName.equalsIgnoreCase("§aSuchen")) {
                 // Spieler in Suchmodus versetzen
                 player.closeInventory();
@@ -115,7 +115,7 @@ public class GUIListener implements Listener {
 
                 // GUI neu laden, um Änderungen anzuzeigen
                 player.closeInventory();
-                player.openInventory(GUIBuilder.getManagementInventory(player));
+                player.openInventory(GUIBuilder.getManagementInventory(UserManager.getCompany(player.getUniqueId())));
             }
         }
     }
