@@ -49,7 +49,6 @@ public final class Main extends JavaPlugin {
         // Initialisierung der Manager
         CompanyManager.initialize();
         CompanyRegisterManager.initialize();
-        UserManager.initialize();  // Rufe diese Methode im onEnable() auf
 
     }
 

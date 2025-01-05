@@ -20,26 +20,26 @@ public class ChatListener implements Listener {
             e.setCancelled(true); // Chat-Nachricht abbrechen
             GUIListener.list.remove(player); // Spieler aus der Suchliste entfernen
 
-            String suchbegriff = e.getMessage(); // Spieler eingegebener Begriff
-            Inventory gefiltertesInventar = GUIBuilder.getRegisterGUI(player, suchbegriff);
-            int anzahlItems = 0;
+            String search = e.getMessage(); // Spieler eingegebener Begriff
+            Inventory inventory = GUIBuilder.getRegisterGUI(player, search);
+            int items = 0;
 
             // Zählen der Items im Inventar (maximal bis Slot 26)
             for (int i = 0; i <= 26; i++) {
-                ItemStack item = gefiltertesInventar.getItem(i);
+                ItemStack item = inventory.getItem(i);
                 if (item != null && item.getType() != Material.AIR) {
-                    anzahlItems++;
+                    items++;
                 }
             }
 
             // Überprüfung, ob gefilterte Items vorhanden sind
-            if (anzahlItems == 0) {
+            if (items == 0) {
                 // Kein Ergebnis gefunden, Standard-GUI öffnen
                 player.openInventory(GUIBuilder.getRegisterGUI(player, null));
                 player.sendMessage("§aEs wurden keine Firmen mit deinem Filter gefunden!");
             } else {
                 // Gefilterte Ergebnisse anzeigen
-                player.openInventory(gefiltertesInventar);
+                player.openInventory(inventory);
             }
         }
     }

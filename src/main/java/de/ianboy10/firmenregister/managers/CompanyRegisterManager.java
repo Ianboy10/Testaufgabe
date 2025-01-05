@@ -24,7 +24,7 @@ public class CompanyRegisterManager {
                 .prepareStatement("SELECT * FROM company_register")) {
             ResultSet rs = statement.executeQuery();
             while (rs.next()) {
-                String firmaId = rs.getString("firmaId");
+                String companyId = rs.getString("firmaId");
 
                 // Sichtbarkeitsinformationen aus der Datenbank abrufen
                 Map<RegisterTypes, Boolean> types = new HashMap<>();
@@ -35,8 +35,8 @@ public class CompanyRegisterManager {
                 types.put(RegisterTypes.MEMBERS, rs.getBoolean("members"));
 
                 // Daten in Maps und Listen speichern
-                showedInformations.put(firmaId, types);
-                registeredCompanys.add(firmaId);
+                showedInformations.put(companyId, types);
+                registeredCompanys.add(companyId);
             }
         } catch (SQLException e) {
             e.printStackTrace(); // Fehlerprotokollierung
@@ -44,22 +44,22 @@ public class CompanyRegisterManager {
     }
 
     // Überprüfen, ob eine Firma registriert ist
-    public static boolean isRegistered(String firmaId) {
-        return registeredCompanys.contains(firmaId);
+    public static boolean isRegistered(String companyId) {
+        return registeredCompanys.contains(companyId);
     }
 
     // Eine neue Firma registrieren
-    public static void registerCompany(String firmaId) {
+    public static void registerCompany(String companyId) {
         // Standardwerte für Sichtbarkeitsinformationen
         Map<RegisterTypes, Boolean> types = new HashMap<>();
         for (RegisterTypes registerType : RegisterTypes.values()) {
             types.put(registerType, true); // Standardmäßig auf 'true'
         }
-        showedInformations.put(firmaId, types);
+        showedInformations.put(companyId, types);
 
         try (PreparedStatement statement = Main.getDatabaseManager().getConnection()
                 .prepareStatement("INSERT INTO company_register(firmaId, bankingId, owner, description, biz, members) VALUES (?, ?, ?, ?, ?, ?)")) {
-            statement.setString(1, firmaId);
+            statement.setString(1, companyId);
             statement.setBoolean(2, true);
             statement.setBoolean(3, true);
             statement.setBoolean(4, true);
@@ -70,24 +70,24 @@ public class CompanyRegisterManager {
             e.printStackTrace(); // Fehlerprotokollierung
         }
 
-        registeredCompanys.add(firmaId); // Firma zur Liste hinzufügen
+        registeredCompanys.add(companyId); // Firma zur Liste hinzufügen
     }
 
     // Eine Firma abmelden (aus Datenbank und Speicher entfernen)
-    public static void unregisterCompany(String firmaId) {
-        registeredCompanys.remove(firmaId);
-        showedInformations.remove(firmaId);
+    public static void unregisterCompany(String companyId) {
+        registeredCompanys.remove(companyId);
+        showedInformations.remove(companyId);
 
         try (PreparedStatement statement = Main.getDatabaseManager().getConnection()
                 .prepareStatement("DELETE FROM company_register WHERE firmaId=?")) {
-            statement.setString(1, firmaId);
+            statement.setString(1, companyId);
             statement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace(); // Fehlerprotokollierung
         }
     }
 
-    public static void setAllowing(String firmaId, RegisterTypes types, boolean bool) {
+    public static void setAllowing(String companyId, RegisterTypes types, boolean bool) {
 
         // Bestimmen, welche Spalte geändert werden muss basierend auf dem RegisterType
         String columnName = null;
@@ -117,7 +117,7 @@ public class CompanyRegisterManager {
         try (PreparedStatement stmt = Main.getDatabaseManager().getConnection().prepareStatement(sql)) {
             // Setzen der Parameter (true = 1, false = 0)
             stmt.setBoolean(1, bool);
-            stmt.setString(2, firmaId);
+            stmt.setString(2, companyId);
 
             // Ausführen der SQL-Abfrage und Fehlerbehandlung
             stmt.executeUpdate();
@@ -126,16 +126,16 @@ public class CompanyRegisterManager {
         }
 
         // Bestehende Sichtbarkeitsinformationen abrufen
-        showedInformations.put(firmaId, loadVisibilityFromDatabase(firmaId));
+        showedInformations.put(companyId, loadVisibilityFromDatabase(companyId));
 
         // Debug-Ausgabe: Überprüfen, ob die Map korrekt aktualisiert wurde
     }
 
-    private static Map<RegisterTypes, Boolean> loadVisibilityFromDatabase(String firmaId) {
+    private static Map<RegisterTypes, Boolean> loadVisibilityFromDatabase(String companyId) {
         Map<RegisterTypes, Boolean> visibilityMap = new HashMap<>();
         String sql = "SELECT * FROM company_register WHERE firmaId = ?";
         try (PreparedStatement stmt = Main.getDatabaseManager().getConnection().prepareStatement(sql)) {
-            stmt.setString(1, firmaId);
+            stmt.setString(1, companyId);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     visibilityMap.put(RegisterTypes.BANKINGID, rs.getBoolean("bankingId"));
@@ -153,9 +153,9 @@ public class CompanyRegisterManager {
 
 
     // Sichtbarkeitsstatus für einen bestimmten Typ abrufen
-    public static boolean getAllowing(String firmaId, RegisterTypes type) {
-        return showedInformations.get(firmaId) != null
-                && showedInformations.get(firmaId).getOrDefault(type, false);
+    public static boolean getAllowing(String companyId, RegisterTypes type) {
+        return showedInformations.get(companyId) != null
+                && showedInformations.get(companyId).getOrDefault(type, false);
     }
 
     // Liste aller registrierten Firmen abrufen

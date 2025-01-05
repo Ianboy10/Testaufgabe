@@ -9,36 +9,17 @@ import java.util.*;
 
 public class UserManager {
 
-    // Map zur Zuordnung von UUIDs zu Firmen-IDs
-    public static final Map<UUID, String> companyPlayers = new HashMap<>();
-
-    // Initialisierungsmethode, um Daten aus der Datenbank zu laden
-    public static void initialize() {
-        // Verbindung zur Datenbank herstellen und Abfrage ausführen
-        try (PreparedStatement statement = Main.getDatabaseManager().getConnection()
-                .prepareStatement("SELECT * FROM company_users")) {
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                // UUID und Firmen-ID aus dem ResultSet auslesen
-                UUID uuid = UUID.fromString(resultSet.getString("uuid"));
-                String companyId = resultSet.getString("firmaId");
-                // Werte in die Map einfügen
-                companyPlayers.put(uuid, companyId);
-            }
-        } catch (SQLException e) {
-            // Fehlerausgabe für Debugging
-            e.printStackTrace();
-        }
-    }
-
     // Überprüfen, ob ein Spieler in einer Firma ist
     public static boolean inCompany(UUID uuid) {
-        return companyPlayers.containsKey(uuid);
+        return Company.isInAnyCompany(uuid, CompanyManager.getAllCompanies());
     }
 
     // Die Firmen-ID eines Spielers abrufen
     public static String getCompany(UUID uuid) {
-        return companyPlayers.get(uuid);
+        Collection<Company> companies = CompanyManager.getAllCompanies();
+        return Company.getPlayerCompany(uuid, companies)
+                .map(Company::getCompanyId)
+                .orElse(null);
     }
 
 }

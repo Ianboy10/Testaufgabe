@@ -1,10 +1,7 @@
 package de.ianboy10.firmenregister.listeners;
 
 import de.ianboy10.firmenregister.guis.GUIBuilder;
-import de.ianboy10.firmenregister.managers.CompanyManager;
-import de.ianboy10.firmenregister.managers.CompanyRegisterManager;
-import de.ianboy10.firmenregister.managers.RegisterTypes;
-import de.ianboy10.firmenregister.managers.UserManager;
+import de.ianboy10.firmenregister.managers.*;
 import de.tr7zw.nbtapi.NBT;
 import de.tr7zw.nbtapi.iface.ReadableItemNBT;
 import org.bukkit.Material;
@@ -26,6 +23,7 @@ public class GUIListener implements Listener {
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
         Player player = (Player) event.getWhoClicked();
+        Company company = CompanyManager.getCompany(UserManager.getCompany(player.getUniqueId()));
 
         // Sicherheitsprüfungen, um Fehler bei null-Werten zu vermeiden
         if (event.getView() == null || event.getView().getTitle() == null) return;
@@ -40,43 +38,31 @@ public class GUIListener implements Listener {
 
             if (displayName.equalsIgnoreCase("§a§lFirma hinzufügen")) {
                 // Firma registrieren
-                CompanyRegisterManager.registerCompany(UserManager.getCompany(player.getUniqueId()));
-                player.closeInventory();
+                CompanyRegisterManager.registerCompany(company.getCompanyId());
                 player.openInventory(GUIBuilder.getRegisterGUI(player, null));
                 player.sendMessage("§aDeine Firma wurde erfolgreich registriert.");
             } else if (displayName.equalsIgnoreCase("§a§lFirma verwalten")) {
                 // Verwaltung öffnen
-                player.closeInventory();
-                player.openInventory(GUIBuilder.getManagementInventory(UserManager.getCompany(player.getUniqueId())));
+                player.openInventory(GUIBuilder.getManagementInventory(company.getCompanyId(), player));
             } else if (displayName.equalsIgnoreCase("§aSuchen")) {
                 // Spieler in Suchmodus versetzen
-                player.closeInventory();
                 list.add(player);
                 player.sendMessage("§bWonach suchst du genau?");
-            } else if(event.getCurrentItem().getType() == Material.ANVIL) {
-                if(event.isShiftClick() && player.isOp()) {
-                    String firmaId = NBT.get(event.getCurrentItem(), (Function<ReadableItemNBT, String>) nbt -> nbt.getString("companyId"));
-                    if(firmaId != null && CompanyManager.exists(firmaId)) {
-                        player.openInventory(GUIBuilder.getManagementInventory(firmaId));
-                    } else {
-                        player.sendMessage("§cDiese Firma konnte nicht gefunden werden!");
-                    }
-                }
+                player.closeInventory();
             }
         }
         // Verarbeitung für das Firmenverwaltungs-Inventar
         else if (event.getView().getTitle().equalsIgnoreCase("§a§lFirmenverwaltung")) {
             event.setCancelled(true); // Verhindert das Entfernen von Items aus dem GUI
 
-            String firmenId = UserManager.getCompany(player.getUniqueId());
             String displayName = event.getCurrentItem().getItemMeta().getDisplayName();
 
             if (displayName.equalsIgnoreCase("§c§lFirma entfernen")) {
                 // Firma aus dem Register entfernen
-                CompanyRegisterManager.unregisterCompany(firmenId);
+                CompanyRegisterManager.unregisterCompany(company.getCompanyId());
                 player.closeInventory();
                 player.sendMessage("§aDu hast deine Firma erfolgreich aus dem Firmenregister entfernt.");
-            } else if(event.getCurrentItem().getType() == Material.REDSTONE_BLOCK || event.getCurrentItem().getType() == Material.EMERALD_BLOCK) {
+            } else if (event.getCurrentItem().getType() == Material.REDSTONE_BLOCK || event.getCurrentItem().getType() == Material.EMERALD_BLOCK) {
                 // Verarbeiten von Sichtbarkeitseinstellungen
                 RegisterTypes type = null;
                 boolean bool;
@@ -110,12 +96,10 @@ public class GUIListener implements Listener {
 
                 // Sichtbarkeitsstatus setzen
                 if (type != null) {
-                    CompanyRegisterManager.setAllowing(firmenId, type, bool);
+                    CompanyRegisterManager.setAllowing(company.getCompanyId(), type, bool);
                 }
 
-                // GUI neu laden, um Änderungen anzuzeigen
-                player.closeInventory();
-                player.openInventory(GUIBuilder.getManagementInventory(UserManager.getCompany(player.getUniqueId())));
+                player.openInventory(GUIBuilder.getManagementInventory(company.getCompanyId(), player));
             }
         }
     }
