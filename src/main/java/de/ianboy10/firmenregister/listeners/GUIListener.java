@@ -2,8 +2,6 @@ package de.ianboy10.firmenregister.listeners;
 
 import de.ianboy10.firmenregister.guis.GUIBuilder;
 import de.ianboy10.firmenregister.managers.*;
-import de.tr7zw.nbtapi.NBT;
-import de.tr7zw.nbtapi.iface.ReadableItemNBT;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -13,7 +11,6 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 
 public class GUIListener implements Listener {
 

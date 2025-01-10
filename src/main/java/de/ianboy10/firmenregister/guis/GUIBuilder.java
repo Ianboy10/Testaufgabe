@@ -27,50 +27,51 @@ public class GUIBuilder {
             Company company = CompanyManager.getCompany(companyId);
             if (!CompanyManager.exists(company.getCompanyId())) continue;
 
-            boolean matchesFilter = message == null ||
+            if (message == null ||
                     company.getName().contains(message) ||
                     company.getDescription().contains(message) ||
-                    company.getMembers().contains(message);
+                    company.getMembers().contains(message)) continue;
 
 
-            if (matchesFilter) {
-                ItemBuilder itemBuilder = new ItemBuilder(Material.ANVIL)
-                        .setDisplayName("§a" + company.getName())
-                        .setLore(Arrays.asList(
-                                        (company.getDescription() != null && CompanyRegisterManager.getAllowing(companyId, RegisterTypes.DESCRIPTION))
-                                                ? "§7Beschreibung: " + company.getDescription() : null,
+            ItemBuilder itemBuilder = new ItemBuilder(Material.ANVIL)
+                    .setDisplayName("§a" + company.getName())
+                    .setLore(Arrays.asList(
+                                    (company.getDescription() != null && CompanyRegisterManager.getAllowing(companyId, RegisterTypes.DESCRIPTION))
+                                            ? "§7Beschreibung: " + company.getDescription() : null,
 
-                                        (company.getOwner() != null && CompanyRegisterManager.getAllowing(companyId, RegisterTypes.OWNER))
-                                                ? "§7Inhaber: " + Bukkit.getOfflinePlayer(company.getOwner()).getName() : null,
+                                    (company.getOwner() != null && CompanyRegisterManager.getAllowing(companyId, RegisterTypes.OWNER))
+                                            ? "§7Inhaber: " + Bukkit.getOfflinePlayer(company.getOwner()).getName() : null,
 
-                                        (company.getBankingId() != null && CompanyRegisterManager.getAllowing(companyId, RegisterTypes.BANKINGID))
-                                                ? "§7Kontonummer: " + company.getBankingId() : null,
+                                    (company.getBankingId() != null && CompanyRegisterManager.getAllowing(companyId, RegisterTypes.BANKINGID))
+                                            ? "§7Kontonummer: " + company.getBankingId() : null,
 
-                                        (company.getBiz() != null && CompanyRegisterManager.getAllowing(companyId, RegisterTypes.BIZ))
-                                                ? "§7BIZ: " + company.getBiz() : null,
+                                    (company.getBiz() != null && CompanyRegisterManager.getAllowing(companyId, RegisterTypes.BIZ))
+                                            ? "§7BIZ: " + company.getBiz() : null,
 
-                                        (company.getMembers() != null && CompanyRegisterManager.getAllowing(companyId, RegisterTypes.MEMBERS))
-                                                ? "§7Mitglieder: " + company.getMembers().size() : null
-                                ).stream()
-                                .filter(Objects::nonNull)  // Filter out null values
-                                .collect(Collectors.toList()));
-                ItemStack itemStack = itemBuilder.build();
+                                    (company.getMembers() != null && CompanyRegisterManager.getAllowing(companyId, RegisterTypes.MEMBERS))
+                                            ? "§7Mitglieder: " + company.getMembers().size() : null
+                            ).stream()
+                            .filter(Objects::nonNull)  // Filter out null values
+                            .collect(Collectors.toList()));
+            ItemStack itemStack = itemBuilder.build();
 
-                NBT.modify(itemStack, nbt -> {
-                    nbt.setString("companyId", companyId);
-                });
+            NBT.modify(itemStack, nbt -> {
+                nbt.setString("companyId", companyId);
+            });
 
-                inventory.addItem(itemStack);
-            }
+            inventory.addItem(itemStack);
         }
 
         // Graue Platzhalter im unteren Bereich des Inventars
-        for (int i = 27; i < 36; i++) {
+        for (int i = 27;
+                i < 36; i++) {
             inventory.setItem(i, new ItemBuilder(Material.STAINED_GLASS_PANE).setDisplayName("§8").build());
         }
 
         // Optionen basierend auf der Firmensituation des Spielers
-        if (UserManager.inCompany(player.getUniqueId()) && playersCompany.getOwner().equals(player.getUniqueId())) {
+        if (UserManager.inCompany(player.getUniqueId()) && playersCompany.getOwner().
+
+                equals(player.getUniqueId())) {
             if (!CompanyRegisterManager.isRegistered(playerCompanyId)) {
                 inventory.setItem(27, new SkullBuilder("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWZmMzE0MzFkNjQ1ODdmZjZlZjk4YzA2NzU4MTA2ODFmOGMxM2JmOTZmNTFkOWNiMDdlZDc4NTJiMmZmZDEifX19")
                         .setDisplayName("§a§lFirma hinzufügen")
@@ -85,10 +86,18 @@ public class GUIBuilder {
         }
 
         // Suchoption
-        inventory.setItem(31, new SkullBuilder("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWFiNzM5ZjRjYjAyOGVmMmFjZjM0YTZkYzNiNGZmODVlYWM1Y2E5ODdiNTgzMmJmZGQwZjNjMzM1MWFhNDQzIn19fQ==")
-                .setDisplayName("§aSuchen")
-                .setLore("§7Nach einem Begriff suchen...")
-                .build());
+        inventory.setItem(31, new
+
+                SkullBuilder("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWFiNzM5ZjRjYjAyOGVmMmFjZjM0YTZkYzNiNGZmODVlYWM1Y2E5ODdiNTgzMmJmZGQwZjNjMzM1MWFhNDQzIn19fQ==")
+                .
+
+                setDisplayName("§aSuchen")
+                        .
+
+                setLore("§7Nach einem Begriff suchen...")
+                        .
+
+                build());
 
         return inventory;
     }
@@ -99,11 +108,11 @@ public class GUIBuilder {
         Inventory inventory = Bukkit.createInventory(null, 3 * 9, "§a§lFirmenverwaltung");
 
         Company company = CompanyManager.getCompany(companyId);
-        if(company == null || !CompanyManager.exists(companyId)) return null;
+        if (company == null || !CompanyManager.exists(companyId)) return null;
 
 
         for (int i = 0; i < 27; i++) { // Graue Glasscheiben als Platzhalter
-            if(i >= 11 && i <= 15) continue;
+            if (i >= 11 && i <= 15) continue;
             inventory.setItem(i, new ItemBuilder(Material.STAINED_GLASS_PANE).setDisplayName("§8").build());
         }
 
@@ -124,7 +133,7 @@ public class GUIBuilder {
                 .setLore(Arrays.asList("§7Klicke hier, um deine Firma aus dem Firmenregister zu entfernen."));
         inventory.setItem(18, itemBuilder.build());
 
-        if(player != null && player.isOp()) {
+        if (player != null && player.isOp()) {
             SkullBuilder skullBuilder = new SkullBuilder("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTY0MzlkMmUzMDZiMjI1NTE2YWE5YTZkMDA3YTdlNzVlZGQyZDUwMTVkMTEzYjQyZjQ0YmU2MmE1MTdlNTc0ZiJ9fX0=")
                     .setDisplayName("§c§lFirmeninformationen")
                     .setLore("§7FirmenID: " + companyId, "§7Besitzer: " + Bukkit.getOfflinePlayer(company.getOwner()).getName());

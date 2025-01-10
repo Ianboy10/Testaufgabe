@@ -1,7 +1,5 @@
 package de.ianboy10.firmenregister.managers;
 
-import org.bukkit.entity.LightningStrike;
-
 import java.util.*;
 
 public class Company {
@@ -106,4 +104,5 @@ public class Company {
                 ", members=" + members +
                 '}';
     }
+
 }
